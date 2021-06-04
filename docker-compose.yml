@@ -1,0 +1,57 @@
+# local environment.
+version: '3'
+
+services:
+  nginx:
+    container_name: untitled_app_nginx
+    build:
+      context: ./
+      dockerfile: docker/nginx/Dockerfile
+    ports:
+      - 81:80
+    volumes:
+      - ./www/public:/var/www/public:cached
+      - ./www/storage/app:/var/www/public/storage
+    depends_on:
+      - php
+    environment:
+      TZ: Asia/Tokyo
+
+  php:
+    container_name: untitled_app_php
+    build:
+      context: ./
+      dockerfile: docker/php/Dockerfile
+    volumes:
+      - ./www:/var/www
+    links:
+      - database
+
+  database:
+    container_name: untitled_app_mysqld
+    build:
+      context: ./
+      dockerfile: docker/database/Dockerfile
+    volumes:
+      - db_volume:/var/lib/mysql
+    ports:
+      - 3301:3306
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: untitled
+      MYSQL_USER: untitled_user
+      MYSQL_PASSWORD: secret
+
+  # テーブル定義書　(execute after db:migrate)
+  tbls:
+    container_name: untitled_app_dbdoc
+    image: k1low/tbls:latest
+    volumes:
+      - ./:/work
+    command: doc mysql://untitled_user:secret@untitled_app_mysqld:3306/untitled ./doc/schema --force
+    profiles:
+      - dbdoc
+
+volumes:
+  db_volume:
+    driver: local
