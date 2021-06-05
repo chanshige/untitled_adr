@@ -1,6 +1,4 @@
-FROM mysql:8.0.20
+FROM postgres:latest
 LABEL maintainer="bell.tanaka@karabiner.tech"
 
-COPY ./docker/database/default.cnf /etc/mysql/conf.d/default.cnf
-
-EXPOSE 3306
+EXPOSE 5432

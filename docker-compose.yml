@@ -28,19 +28,24 @@ services:
       - database
 
   database:
-    container_name: untitled_app_mysqld
+    container_name: untitled_app_pgsql
     build:
       context: ./
       dockerfile: docker/database/Dockerfile
     volumes:
-      - db_volume:/var/lib/mysql
+      - pgsql_data:/var/lib/postgresql/data
     ports:
-      - 3301:3306
+      - 54321:5432
     environment:
-      MYSQL_ROOT_PASSWORD: root
-      MYSQL_DATABASE: untitled
-      MYSQL_USER: untitled_user
-      MYSQL_PASSWORD: secret
+      POSTGRES_DB: untitled
+      POSTGRES_USER: untitled_user
+      POSTGRES_PASSWORD: secret
+      POSTGRES_INITDB_ARGS: --encoding=UTF-8 --locale=C
+    command: -c log_destination=stderr -c log_statement=all -c log_connections=on -c log_disconnections=on
+    logging:
+      options:
+        max-size: "10k"
+        max-file: "5"
 
   # テーブル定義書　(execute after db:migrate)
   tbls:
@@ -53,5 +58,5 @@ services:
       - dbdoc
 
 volumes:
-  db_volume:
+  pgsql_data:
     driver: local

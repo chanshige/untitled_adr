@@ -11,8 +11,9 @@ RUN apk upgrade --update \
   git \
   tzdata \
   oniguruma-dev \
-  mariadb-dev \
+  postgresql-dev \
   && apk --no-cache add \
+  postgresql-client \
   libzip-dev \
   icu-dev \
   libpng-dev \
@@ -21,11 +22,13 @@ RUN apk upgrade --update \
   freetype-dev \
   exiftool \
   && docker-php-ext-configure gd --with-freetype --with-jpeg --with-webp \
+  && docker-php-ext-configure pgsql --with-pgsql=/usr/local/pgsql \
   && docker-php-ext-install -j$(nproc) \
   bcmath \
   gd \
   opcache \
-  pdo_mysql \
+  pgsql \
+  pdo_pgsql \
   zip \
   intl \
   opcache \
