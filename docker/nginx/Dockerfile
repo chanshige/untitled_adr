@@ -1,4 +1,4 @@
-FROM nginx:latest
+FROM docker2021repos/nginx:latest
 LABEL maintainer="bell.tanaka@karabiner.tech"
 
 COPY ./docker/nginx/nginx.conf /etc/nginx/
